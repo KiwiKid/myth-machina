@@ -4,3 +4,6 @@ __pycache__
 .env
 .pwa
 node_modules
+myth_dev
+staticfiles
+staticfiles_old_old_old
