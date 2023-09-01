@@ -1,0 +1,6 @@
+*.sqlite3
+.vscode
+__pycache__
+.env
+.pwa
+node_modules
