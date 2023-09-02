@@ -1,4 +1,5 @@
 from time import sleep
+from django.http import JsonResponse
 from django_htmx.http import push_url
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -34,7 +35,27 @@ def get_paginated_query(query, request):
 # TODO: add bounded box filtering
 
 
+def get_map_data(request):
+   # places = Place.objects.order_by('-updated_at')
+    data = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {"popupContent": "This is a popup!"},
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [-0.09, 51.505]
+                }
+            }
+        ]
+    }
+    return JsonResponse(data)
+
+
 def map(request):
+    # bbox_string = request.args.get("bbox")
+
     places = Place.objects.order_by('-updated_at')
     context = {}
 

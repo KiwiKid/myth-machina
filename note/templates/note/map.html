@@ -4,10 +4,95 @@
     Home |
 {% endblock title %}
 
+{% block additional_head_links %}
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+{% endblock additional_head_links%}
+
 {% block additional_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+
+<style>
+  #map {
+    height: 800px
+  }
+</style>
+
 {% endblock additional_css %}
 
 {% block content %}
-    <h1>i am a map</h1>
+
+
+<div id="map"
+ data-zoom="5"
+ data-center="[26.79, -69.71]">
+  <div
+   data-tile="EsriWorldImagery">
+  </div>
+</div>
+<div
+data-hyperleaflet-source> 
+ <span data-id="1"
+  data-geometry-type="Point"
+  data-geometry="[25.775, -80.193]"
+  data-popup="<h3>Miami</h3>"></span>
+ <span data-id="2"
+  data-geometry-type="Point"
+  data-geometry="[18.465, -66.117]"
+  data-popup="<h3>San Juan</h3>"></span>
+ <span data-id="3"
+  data-geometry-type="Point"
+  data-geometry="[32.317, -64.737]"  
+  data-popup="<h3>Bermuda</h3>"></span>
+ <span data-id="4"
+  data-geometry-type="Polygon"
+  data-geometry="[[[25.775, -80.193], [18.465, -66.117],
+   [32.317, -64.737], [25.775, -80.193]]]"
+   data-tooltip="😈"
+   ></span>
+</div>
+<script src="https://unpkg.com/hyperleaflet@0.4.4"></script>
+
+<!--
+<div hx-swap-oob="true" hx-trigger="load" hx-get="/data" hx-indicator="#loading" class="hyperleaflet" style="width: 100%; height: 400px;"></div>
+<div id="loading">Loading...</div>
+
+<div
+      id="map"
+      data-center="[30.91705, 40.4645]"
+      data-zoom="4"
+      data-reverse-order-all
+    >
+      <div data-tile="EsriWorldImagery"></div>
+      <div data-tile="OpenStreetMap" data-default-tile></div>
+      <div data-hyperleaflet-source data-geometry-display="json">
+        <span
+          data-id="1"
+          data-geometry-type="Point"
+          data-geometry="[32.8597,39.9334]"
+          data-popup="<span class='city-popup'> Ankara </span>"
+        ></span>
+        <span
+          data-id="2"
+          data-geometry-type="Point"
+          data-geometry="[28.9744, 41.0082]"
+          data-popup="<span class='city-popup'>İstanbul</span>"
+        ></span>
+        <span
+          data-id="3"
+          data-geometry-type="LineString"
+          data-geometry="[
+          [28.9744, 41.0082],
+          [32.8597,39.9334]
+        ]"
+          data-tooltip="Road to Ankara"
+        >
+        </span>
+      </div>
+      <span class="custom-control zoom-level" id="zoom-level"></span>
+      
+    </div>-->
+
     {{ count }}
 {% endblock content %} 
+
+
