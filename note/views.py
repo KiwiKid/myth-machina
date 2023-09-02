@@ -31,8 +31,21 @@ def get_paginated_query(query, request):
                                                  on_ends=1)
     return query, page_range
 
+# TODO: add bounded box filtering
+
+
+def map(request):
+    places = Place.objects.order_by('-updated_at')
+    context = {}
+
+    context['count'] = len(places)
+
+    template_name = 'note/map.html'
+    return render(request, template_name, context)
 
 # Create your views here.
+
+
 def home(request):
     '''
     Home page
@@ -52,14 +65,16 @@ def home(request):
     query = request.GET.get('search', False)
     if query:
         sleep(0.1)
-        notes = notes.filter(Q(title__icontains=query) | Q(content__icontains=query))
+        notes = notes.filter(Q(title__icontains=query) |
+                             Q(content__icontains=query))
     # filter by is_completed status
     uncompleted = request.GET.get('uncompleted', False)
     if uncompleted == 'on':
         sleep(0.1)
         notes = notes.filter(completed_at__isnull=True)
     # get pagination
-    context['notes'], context['page_range'] = get_paginated_query(notes, request)
+    context['notes'], context['page_range'] = get_paginated_query(
+        notes, request)
 
     context['search'] = query
     context['uncompleted'] = uncompleted
@@ -108,8 +123,8 @@ def note_view(request):
             # if at least title or content provided - create Note
             else:
                 new_note = Place.objects.create(title=data['title'],
-                                               content=data['content'],
-                                               author=request.user)
+                                                content=data['content'],
+                                                author=request.user)
                 # set completed status
                 if (data.get('completed', None) is not None
                         and data.get('completed')) == 'on':
@@ -122,7 +137,8 @@ def note_view(request):
         author=request.user
     ).order_by('-updated_at')
     # get pagination
-    context['notes'], context['page_range'] = get_paginated_query(notes, request)
+    context['notes'], context['page_range'] = get_paginated_query(
+        notes, request)
 
     response = render(request, template_name, context)
     return push_url(response, reverse('home_view'))
@@ -149,7 +165,8 @@ def delete_note_view(request, note_id):
         author=request.user
     ).order_by('-updated_at')
     # get pagination
-    context['notes'], context['page_range'] = get_paginated_query(notes, request)
+    context['notes'], context['page_range'] = get_paginated_query(
+        notes, request)
     response = render(request, template_name, context)
     return push_url(response, reverse('home_view'))
 
@@ -197,6 +214,7 @@ def bulk_notes_view(request):
         author=request.user
     ).order_by('-updated_at')
     # get pagination
-    context['notes'], context['page_range'] = get_paginated_query(notes, request)
+    context['notes'], context['page_range'] = get_paginated_query(
+        notes, request)
     response = render(request, template_name, context)
     return push_url(response, reverse('home_view'))

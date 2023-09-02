@@ -8,7 +8,7 @@ from django.db.models import Count, F
 from django.http.response import JsonResponse
 from django.utils import timezone
 
-from note.models import Note
+from note.models import Place
 
 
 def jsonify_queryset(object,fields):
@@ -40,7 +40,7 @@ def get_analytics_data(request):
     date_interval_dates = []
     while date <= current_date:
         next_month = (date + timedelta(days=31)).replace(day=1)
-        notes_completed_count = Note.objects.filter(
+        notes_completed_count = Place.objects.filter(
             author=user,
             completed_at__date__gte=date,
             completed_at__date__lt=next_month

@@ -1,5 +1,10 @@
 ```
+docker-compose run web python manage.py makemigrations
 docker-compose run web python manage.py migrate
+docker-compose run web python manage.py runserver
+
+# delete db
+docker volume rm myth-machina_pgdata
 
 ```
 

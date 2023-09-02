@@ -1,3 +1,5 @@
+from django.contrib.gis.db import models as gis_models
+
 from django.db import models
 
 from user.models import NoteUser
@@ -12,12 +14,14 @@ class Place(models.Model):
     wiki_title: models.TextField(blank=True)
     wiki_url: models.TextField(blank=True)
     wiki_summary = models.TextField(blank=True)
-    completed_at = models.DateTimeField(help_text="None if the note isn't completed. Contain datetime when the note was completed", blank=True, null=True, default=None)
+    completed_at = models.DateTimeField(
+        help_text="None if the note isn't completed. Contain datetime when the note was completed", blank=True, null=True, default=None)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    location = gis_models.PointField(blank=True, null=True)
 
     def __str__(self):
-        return f'{self.id}: {self.title}'
+        return f'{self.title}: {self.title}'
 
     @property
     def is_completed(self):

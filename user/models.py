@@ -59,4 +59,4 @@ class NoteUser(AbstractUser):
         pass
 
     def __str__(self):
-        return f'{self.id}: Email: {self.email}'
+        return f'{self.email}: Email: {self.email}'
