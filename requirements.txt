@@ -4,3 +4,4 @@ gunicorn==21.2.0
 whitenoise==6.5.0
 psycopg2==2.9.6
 django-environ==0.10.0
+wikipedia==1.4.0

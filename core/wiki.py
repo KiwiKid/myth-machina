@@ -1,33 +1,33 @@
 import wikipedia
 
 
-def fetch_wikipedia_data(title):
-    """Fetch data from Wikipedia based on title."""
+def fetch_wikipediapedia_data(title):
+    """Fetch data from wikipediapedia based on title."""
     try:
         page = wikipedia.page(title)
         return {
-            'wiki_title': page.title,
-            'wiki_url': page.url,
-            'wiki_summary': page.summary,
+            'wikipedia_title': page.title,
+            'wikipedia_url': page.url,
+            'wikipedia_summary': page.summary,
         }
     except wikipedia.DisambiguationError as e:
         print(f"Disambiguation error: {e.options}")
         return None
     except wikipedia.PageError:
-        print(f"No Wikipedia page found for {title}")
+        print(f"No wikipediapedia page found for {title}")
         return None
 
 
-def search_wikipedia_for_lat_lng(lat: float, lng: float):
-    """Search Wikipedia based on user-input latitude and longitude."""
-    # Search Wikipedia using the coordinates
+def search_wikipediapedia_for_lat_lng(lat: float, lng: float):
+    """Search wikipediapedia based on user-input latitude and longitude."""
+    # Search wikipediapedia using the coordinates
     results = wikipedia.geosearch(lat, lng)
 
     if not results:
-        print("No results found on Wikipedia for the given coordinates.")
+        print("No results found on wikipediapedia for the given coordinates.")
         return
 
-    print("\nFound the following matches on Wikipedia:")
+    print("\nFound the following matches on wikipediapedia:")
     for idx, result in enumerate(results, 1):
         print(f"{idx}. {result}")
 
@@ -39,12 +39,12 @@ def search_wikipedia_for_lat_lng(lat: float, lng: float):
             return
         elif choice.isdigit() and 0 < int(choice) <= len(results):
             chosen_title = results[int(choice) - 1]
-            data = fetch_wikipedia_data(chosen_title)
+            data = fetch_wikipediapedia_data(chosen_title)
             if data:
                 print("\nDetails of the chosen location:")
-                print(f"Title: {data['wiki_title']}")
-                print(f"URL: {data['wiki_url']}")
-                print(f"Summary: {data['wiki_summary']}")
+                print(f"Title: {data['wikipedia_title']}")
+                print(f"URL: {data['wikipedia_url']}")
+                print(f"Summary: {data['wikipedia_summary']}")
             return
         else:
             print("Invalid choice. Please try again.")

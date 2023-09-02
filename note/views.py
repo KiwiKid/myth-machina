@@ -35,6 +35,13 @@ def get_paginated_query(query, request):
 # TODO: add bounded box filtering
 
 
+def get_places_in_bbox(bbox_string):
+
+    return Place.objects.all()
+
+# filter(latitude__gte=minLat, latitude__lte=maxLat, longitude__gte=minLng, longitude__lte=maxLng)
+
+
 def get_map_data(request):
    # places = Place.objects.order_by('-updated_at')
     data = {
@@ -62,6 +69,22 @@ def map(request):
     context['count'] = len(places)
 
     template_name = 'note/map.html'
+    return render(request, template_name, context)
+
+
+def map_points(request):
+    bbox_string = request.GET.get("bbox")
+    places = get_places_in_bbox(
+        bbox_string) if bbox_string else Place.objects.all()
+
+    # places = Place.objects.order_by('-updated_at')
+    context = {}
+
+    context['count'] = len(places)
+
+    print(f"map_points {bbox_string}")
+
+    template_name = 'note/map_points.html'
     return render(request, template_name, context)
 
 # Create your views here.

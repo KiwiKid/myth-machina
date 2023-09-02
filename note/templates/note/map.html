@@ -23,38 +23,49 @@
 
 {% block content %}
 
-<script>
-  function hyperleafletData() {
-    console.log('hyperleafletData')
-      return {
-          countries: [],
-          loadPoints() {
-            if(!hyperleaflet){
-              console.log('no hyperleaflet')
-            }else{
-              const bbox = hyperleaflet.getBBoxString();
-              console.log(bbox)
-              /*fetch(`/points?bbox=${bbox}`)
-                  .then(res => res.json())
-                  .then(data => {
-                      this.countries = data; // Assuming the API returns an array of countries
-                  });*/
 
-              // Still assuming you have a map instance set up already
-              hyperleaflet.on('move', () => {
-                  this.loadPoints();
-                  console.log('move')
-
-              });
-            }
-          }
-      }
-  }
-
-
-</script>
 
 <script defer>
+  
+  window.addEventListener('hyperleaflet:ready', (event) => {
+    let htmxElement = document.querySelector('[data-hyperleaflet-source]');
+    if (htmxElement) {
+      let bounds = hyperleaflet.map.getBounds();
+        let bboxString = [
+            bounds.getSouthWest().lat,
+            bounds.getSouthWest().lng,
+            bounds.getNorthEast().lat,
+            bounds.getNorthEast().lng,
+        ].join(',');
+        const query = JSON.stringify({bbox: `${bboxString}`, zoom: hyperleaflet.map.getZoom()})
+        console.log(`SETTIN Hx-vals: ${query}`)
+
+        htmxElement.setAttribute('hx-vals',query);
+    }
+
+
+  window.addEventListener('geometry:click', (e) => {
+    const { clickedPoint, geometry, rowId } = e.detail;
+    console.log(`Clicked on row with ID ${rowId}`);
+    console.log(`Geometry: ${JSON.stringify(geometry)}`);
+    console.log(`Clicked at (${clickedPoint.lat}, ${clickedPoint.lng})`);
+  });
+
+
+  window.addEventListener('map:click', (event) => {
+    const { point } = event.detail;
+    console.log(`Map clicked at: (${point.lat}, ${point.lng})`);
+  });
+
+
+
+  })
+
+    
+    // Fire your custom event after setting the hx-vals
+    // window.dispatchEvent(new Event('hyperleaflet:ready'));
+
+
   /*window.addEventListener('hyperleaflet:ready', (e) => {
     window.dispatchEvent(new Event('hyperleaflet:ready'))
 
@@ -66,7 +77,7 @@
   
   hyperleaflet.whenReady(() => {
     
-  });*/
+  })
 
   window.addEventListener('map:move', (e) => {
     const { zoom, center, bbox, bboxString } = e.detail;
@@ -80,40 +91,34 @@
   window.addEventListener('map:click', (event) => {
     const { point } = event.detail;
     console.log(`Map clicked at: (${point.lat}, ${point.lng})`);
-  });
+  });;*/
 
+
+
+ // 
 
 </script>
 <button @click="console.log('woha click')">HMMMM</button>
 <div id="map"
  data-zoom="5"
  data-center="[26.79, -69.71]"
+ hx-click="alert('map-clicked')"
  >
   <div
    data-tile="EsriWorldImagery">
   </div>
 </div>
-<!--hx-get="/points" hx-vals="js:{bbox: hyperleaflet.getBBoxString()}"-->
+
 <div
+hx-trigger="hyperleaflet:ready from:window, map:move delay:100ms from:window" 
+hx-swap="innerHTML"
+hx-get="/map"
 data-hyperleaflet-source> 
  <span data-id="1"
   data-geometry-type="Point"
   data-geometry="[25.775, -80.193]"
   data-popup="<h3>Miami</h3>"></span>
- <span data-id="2"
-  data-geometry-type="Point"
-  data-geometry="[18.465, -66.117]"
-  data-popup="<h3>San Juan</h3>"></span>
- <span data-id="3"
-  data-geometry-type="Point"
-  data-geometry="[32.317, -64.737]"  
-  data-popup="<h3>Bermuda</h3>"></span>
- <span data-id="4"
-  data-geometry-type="Polygon"
-  data-geometry="[[[25.775, -80.193], [18.465, -66.117],
-   [32.317, -64.737], [25.775, -80.193]]]"
-   data-tooltip="😈"
-   ></span>
+ 
 </div>
 
 <!--
