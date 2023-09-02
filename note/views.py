@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.urls import reverse
 from django.db.models import Q
 
-from note.models import Note
+from note.models import Place
 
 
 def get_paginated_query(query, request):
@@ -46,7 +46,7 @@ def home(request):
         return redirect('login_view')
     context = {}
     # get all notes for user
-    notes = Note.objects.filter(
+    notes = Place.objects.filter(
         author=request.user).order_by('-updated_at')
     # if search param in url
     query = request.GET.get('search', False)
@@ -79,8 +79,8 @@ def note_view(request):
         # update Note
         if data['note_action'] == 'update':
             try:
-                note = Note.objects.get(id=int(data.get('note_id')))
-            except (Note.DoesNotExist, Note.MultipleObjectsReturned):
+                note = Place.objects.get(id=int(data.get('note_id')))
+            except (Place.DoesNotExist, Place.MultipleObjectsReturned):
                 messages.add_message(request, messages.ERROR,
                                      'Something went wrong...')
             # if Note exist - update it
@@ -107,7 +107,7 @@ def note_view(request):
                                      'Title or Content is required!')
             # if at least title or content provided - create Note
             else:
-                new_note = Note.objects.create(title=data['title'],
+                new_note = Place.objects.create(title=data['title'],
                                                content=data['content'],
                                                author=request.user)
                 # set completed status
@@ -118,7 +118,7 @@ def note_view(request):
                 messages.add_message(request, messages.SUCCESS,
                                      'New Note added!')
     # return all notes for user
-    notes = Note.objects.filter(
+    notes = Place.objects.filter(
         author=request.user
     ).order_by('-updated_at')
     # get pagination
@@ -137,15 +137,15 @@ def delete_note_view(request, note_id):
     # delete Note
     if request.method == 'DELETE':
         try:
-            note = Note.objects.get(id=note_id)
+            note = Place.objects.get(id=note_id)
             note.delete()
             messages.add_message(request, messages.WARNING,
                                  'Your Note was deleted!')
-        except (Note.DoesNotExist, Note.MultipleObjectsReturned):
+        except (Place.DoesNotExist, Place.MultipleObjectsReturned):
             messages.add_message(request, messages.ERROR,
                                  'Something went wrong...')
     # return all notes for user
-    notes = Note.objects.filter(
+    notes = Place.objects.filter(
         author=request.user
     ).order_by('-updated_at')
     # get pagination
@@ -170,9 +170,9 @@ def bulk_notes_view(request):
         if action == 'bulk_delete':
             for note_id in selected_notes_ids:
                 try:
-                    note = Note.objects.get(id=note_id)
+                    note = Place.objects.get(id=note_id)
                     note.delete()
-                except (Note.DoesNotExist, Note.MultipleObjectsReturned):
+                except (Place.DoesNotExist, Place.MultipleObjectsReturned):
                     messages.add_message(request, messages.ERROR,
                                          'Something went wrong...')
             messages.add_message(request, messages.WARNING,
@@ -181,19 +181,19 @@ def bulk_notes_view(request):
         else:
             for note_id in selected_notes_ids:
                 try:
-                    note = Note.objects.get(id=note_id)
+                    note = Place.objects.get(id=note_id)
                     if note.is_completed:
                         note.completed_at = None
                     else:
                         note.completed_at = timezone.now()
                     note.save()
-                except (Note.DoesNotExist, Note.MultipleObjectsReturned):
+                except (Place.DoesNotExist, Place.MultipleObjectsReturned):
                     messages.add_message(request, messages.ERROR,
                                          'Something went wrong...')
             messages.add_message(request, messages.SUCCESS,
                                  'Notes updated!')
     # return all notes for user
-    notes = Note.objects.filter(
+    notes = Place.objects.filter(
         author=request.user
     ).order_by('-updated_at')
     # get pagination

@@ -4,11 +4,14 @@ from user.models import NoteUser
 
 
 # Create your models here.
-class Note(models.Model):
+class Place(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
     content = models.TextField(blank=True, null=True)
     author = models.ForeignKey(NoteUser, on_delete=models.CASCADE,
                                related_name='notes')
+    wiki_title: models.TextField(blank=True)
+    wiki_url: models.TextField(blank=True)
+    wiki_summary = models.TextField(blank=True)
     completed_at = models.DateTimeField(help_text="None if the note isn't completed. Contain datetime when the note was completed", blank=True, null=True, default=None)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
