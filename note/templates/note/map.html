@@ -6,6 +6,8 @@
 
 {% block additional_head_links %}
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script defer src="https://unpkg.com/hyperleaflet@0.4.4"></script>
+
 {% endblock additional_head_links%}
 
 {% block additional_css %}
@@ -21,14 +23,77 @@
 
 {% block content %}
 
+<script>
+  function hyperleafletData() {
+    console.log('hyperleafletData')
+      return {
+          countries: [],
+          loadPoints() {
+            if(!hyperleaflet){
+              console.log('no hyperleaflet')
+            }else{
+              const bbox = hyperleaflet.getBBoxString();
+              console.log(bbox)
+              /*fetch(`/points?bbox=${bbox}`)
+                  .then(res => res.json())
+                  .then(data => {
+                      this.countries = data; // Assuming the API returns an array of countries
+                  });*/
 
+              // Still assuming you have a map instance set up already
+              hyperleaflet.on('move', () => {
+                  this.loadPoints();
+                  console.log('move')
+
+              });
+            }
+          }
+      }
+  }
+
+
+</script>
+
+<script defer>
+  /*window.addEventListener('hyperleaflet:ready', (e) => {
+    window.dispatchEvent(new Event('hyperleaflet:ready'))
+
+    hyperleaflet.on('move', () => {
+      
+    });
+    //window.dispatchEvent(new Event('map:move'));
+  })
+  
+  hyperleaflet.whenReady(() => {
+    
+  });*/
+
+  window.addEventListener('map:move', (e) => {
+    const { zoom, center, bbox, bboxString } = e.detail;
+    console.log(`Map zoom at level ${zoom}
+    Centered at (${center.lat}, ${center.lng})
+    Bounded by (${bbox.min.lat}, ${bbox.min.lng}) and (${bbox.max.lat}, ${bbox.max.lng})
+    Bounding box string: ${bboxString}`)
+  });
+
+
+  window.addEventListener('map:click', (event) => {
+    const { point } = event.detail;
+    console.log(`Map clicked at: (${point.lat}, ${point.lng})`);
+  });
+
+
+</script>
+<button @click="console.log('woha click')">HMMMM</button>
 <div id="map"
  data-zoom="5"
- data-center="[26.79, -69.71]">
+ data-center="[26.79, -69.71]"
+ >
   <div
    data-tile="EsriWorldImagery">
   </div>
 </div>
+<!--hx-get="/points" hx-vals="js:{bbox: hyperleaflet.getBBoxString()}"-->
 <div
 data-hyperleaflet-source> 
  <span data-id="1"
@@ -50,7 +115,6 @@ data-hyperleaflet-source>
    data-tooltip="😈"
    ></span>
 </div>
-<script src="https://unpkg.com/hyperleaflet@0.4.4"></script>
 
 <!--
 <div hx-swap-oob="true" hx-trigger="load" hx-get="/data" hx-indicator="#loading" class="hyperleaflet" style="width: 100%; height: 400px;"></div>
