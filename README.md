@@ -3,6 +3,9 @@ docker-compose run web python manage.py makemigrations
 docker-compose run web python manage.py migrate
 docker-compose run web python manage.py runserver
 
+
+docker-compose exec db psql -U user -d myth
+
 # delete db
 docker volume rm myth-machina_pgdata
 

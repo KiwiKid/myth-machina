@@ -26,9 +26,34 @@
 
 
 <script defer>
-  
+
+  const setVals = (selector) => {
+    console.log('setVals')
+    let htmxElement = document.querySelector(selector);
+    if(htmxElement && hyperleaflet){
+      let bounds = hyperleaflet.map.getBounds();
+      let bboxString = [
+          bounds.getSouthWest().lat,
+          bounds.getSouthWest().lng,
+          bounds.getNorthEast().lat,
+          bounds.getNorthEast().lng,
+      ].join(',');
+      const query = JSON.stringify({bbox: `${bboxString}`, zoom: hyperleaflet.map.getZoom()})
+      console.log(`SETTIN Hx-vals: ${query}`)
+      htmxElement.setAttribute('hx-vals',query);
+      console.log('setVals END')
+    }else{
+      console.error(`no htmx or hyperleaflet for ${selector}`)
+    }
+
+    console.log('setVals END END')
+
+  }
+
   window.addEventListener('hyperleaflet:ready', (event) => {
-    let htmxElement = document.querySelector('[data-hyperleaflet-source]');
+    // setVals('[data-hyperleaflet-source]')
+    setVals('#point_container')
+    /*let htmxElement = document.querySelector('');
     if (htmxElement) {
       let bounds = hyperleaflet.map.getBounds();
         let bboxString = [
@@ -41,7 +66,7 @@
         console.log(`SETTIN Hx-vals: ${query}`)
 
         htmxElement.setAttribute('hx-vals',query);
-    }
+    }*/
 
 
   window.addEventListener('geometry:click', (e) => {
@@ -51,11 +76,68 @@
     console.log(`Clicked at (${clickedPoint.lat}, ${clickedPoint.lng})`);
   });
 
-
-  window.addEventListener('map:click', (event) => {
+/*
+  window.addEventListener(, (event) => {
     const { point } = event.detail;
-    console.log(`Map clicked at: (${point.lat}, ${point.lng})`);
+    console.log(`\n\n Map MOVE OCCURED at: (${point.lat}, ${point.lng})`);
+
+
+    const query = JSON.stringify({lat: point.lat, lng: point.lng})
+    console.log(`(post_search) SETTIN Hx-vals: ${query}`)
+    htmx.logAll();
+
+    let htmxElements = document.querySelectorAll('.point_vals');
+    if(htmxElements && htmxElements.length > 0){
+
+      htmxElements.forEach((elm) => {
+        console.log(`(post_search) htmxElement.setAttribute('hx-vals', ${query});)`, {elm})
+        elm.setAttribute('hx-vals', query);
+      })
+      
+
+      htmx.trigger("#post_search", "mapclick")
+      
+      
+    }else{
+      console.error('(post_search) \n\n!!!No post_search element!!\n\n')
+    }
+    
+  });*/
+/*
+  window.addEventListener('map:move', (e) => {
+    const { zoom, center, bbox, bboxString } = e.detail;
+    console.log(`Map zoom at level ${zoom}`);
+    console.log(`Centered at (${center.lat}, ${center.lng})`);
+    console.log(`Bounded by (${bbox.min.lat}, ${bbox.min.lng}) and (${bbox.max.lat}, ${bbox.max.lng})`);
+    console.log(`Bounding box string: ${bboxString}`);
   });
+
+  window.addEventListener('map:zoom', (e) => {
+    const { zoom, center, bbox, bboxString } = e.detail;
+    console.log(`Map zoomed to level ${zoom}`);
+    console.log(`Centered at (${center.lat}, ${center.lng})`);
+    console.log(`Bounded by (${bbox.min.lat}, ${bbox.min.lng}) and (${bbox.max.lat}, ${bbox.max.lng})`);
+    console.log(`Bounding box string: ${bboxString}`);
+  });*/
+
+
+  /*
+  window.addEventListener('map:move', (event) => {
+    const query = JSON.stringify({lat: point.lat, lng: point.lng})
+    console.log(`SETTIN Hx-vals: ${query}`)
+    htmx.logAll();
+
+    let htmxElement = document.querySelector('#point_container');
+    if(htmxElement){
+      console.log(`htmxElement.setAttribute('hx-vals', ${query});)`)
+      htmxElement.setAttribute('hx-vals', query);
+
+      htmx.trigger("#post_search", "mapclick")
+      
+    }else{
+      console.error('\n\n!!!No post_search element!!\n\n')
+    }
+  })*/
 
 
 
@@ -98,29 +180,30 @@
  // 
 
 </script>
-<button @click="console.log('woha click')">HMMMM</button>
 <div id="map"
  data-zoom="5"
  data-center="[26.79, -69.71]"
- hx-click="alert('map-clicked')"
  >
   <div
    data-tile="EsriWorldImagery">
   </div>
-</div>
+
 
 <div
+id="point_container"
 hx-trigger="hyperleaflet:ready from:window, map:move delay:100ms from:window" 
 hx-swap="innerHTML"
-hx-get="/map"
+hx-get="/points"
 data-hyperleaflet-source> 
- <span data-id="1"
-  data-geometry-type="Point"
-  data-geometry="[25.775, -80.193]"
-  data-popup="<h3>Miami</h3>"></span>
- 
+
 </div>
 
+<span id="post_search"
+hx-post="/search"
+hx-trigger="mapclick"
+></span>
+
+</div>
 <!--
 <div hx-swap-oob="true" hx-trigger="load" hx-get="/data" hx-indicator="#loading" class="hyperleaflet" style="width: 100%; height: 400px;"></div>
 <div id="loading">Loading...</div>

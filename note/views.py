@@ -1,3 +1,4 @@
+import random
 from time import sleep
 from django.http import JsonResponse
 from django_htmx.http import push_url
@@ -7,8 +8,15 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils import timezone
 from django.urls import reverse
 from django.db.models import Q
+from django.contrib.gis.geos import Point, Polygon
 
-from note.models import Place
+from note.models import Place, Search
+
+
+def parse_bbox_to_polygon(bbox_string: str) -> Polygon:
+    # bbox_string is expected in the format "minx,miny,maxx,maxy"
+    minx, miny, maxx, maxy = [float(val) for val in bbox_string.split(",")]
+    return Polygon.from_bbox((minx, miny, maxx, maxy))
 
 
 def get_paginated_query(query, request):
@@ -61,33 +69,83 @@ def get_map_data(request):
 
 
 def map(request):
-    # bbox_string = request.args.get("bbox")
+    print(f"map() request")
 
     places = Place.objects.order_by('-updated_at')
     context = {}
 
     context['count'] = len(places)
 
+   # searches = Search.objects.all()
+   # context['searches'] = searches
+
     template_name = 'note/map.html'
+  #  print(f"map() request {len(searches)}")
     return render(request, template_name, context)
 
 
 def map_points(request):
     bbox_string = request.GET.get("bbox")
-    places = get_places_in_bbox(
-        bbox_string) if bbox_string else Place.objects.all()
+    print(f"search in {bbox_string}")
+
+    invalid_point = Point(0, 0)
+    if bbox_string:
+        bbox_polygon = parse_bbox_to_polygon(bbox_string)
+        places = Place.objects.filter(
+            location__within=bbox_polygon).exclude(location=invalid_point)
+        searches = Search.objects.filter(
+            location__within=bbox_polygon).exclude(location=invalid_point)[:10]
+    else:
+        places = Place.objects.all().exclude(location=invalid_point)
+        searches = Search.objects.all().exclude(location=invalid_point)
+    # TODO: add filter by user
 
     # places = Place.objects.order_by('-updated_at')
     context = {}
 
     context['count'] = len(places)
+    context['searches'] = searches
 
     print(f"map_points {bbox_string}")
+    print(f"searches has {len(searches)} results")
 
     template_name = 'note/map_points.html'
     return render(request, template_name, context)
 
 # Create your views here.
+
+
+def search_note_view(request, search_id):
+
+    searches = Search.objects.filter(id=search_id)
+    context = {}
+
+    match = searches.first()
+    context['id'] = match.id
+    context['lat'] = match.location.x
+    context['lng'] = match.location.y
+
+    template_name = 'note/place_search_view.html'
+    return render(request, template_name, context)
+
+
+def place_search(request):
+    lng = float(request.POST.get("lng", 0))
+    lat = float(request.POST.get("lat", 0))
+    print(f"place_search: Point({lat}, {lng})")
+
+   # id = random.randint(0, 999)
+    new_search = Search.objects.create(location=Point(lat, lng))
+
+    context = {}
+    context['id'] = new_search.id
+    context['lng'] = lng
+    context['lat'] = lat
+
+    print(f"new place search id ({new_search.id} {lng}/{lat})")
+
+    template_name = 'note/place_search_view.html'
+    return render(request, template_name, context)
 
 
 def home(request):

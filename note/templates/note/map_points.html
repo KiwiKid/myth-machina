@@ -1,18 +1,15 @@
- <span data-id="1"
-  data-geometry-type="Point"
-  data-geometry="[25.775, -80.193]"
-  data-popup="<h3>Miami</h3>"></span>
- <span data-id="2"
-  data-geometry-type="Point"
-  data-geometry="[18.465, -66.117]"
-  data-popup="<h3>San Juan</h3>"></span>
- <span data-id="3"
-  data-geometry-type="Point"
-  data-geometry="[32.317, -64.737]"  
-  data-popup="<h3>Bermuda</h3>"></span>
- <span data-id="4"
-  data-geometry-type="Polygon"
-  data-geometry="[[[25.775, -80.193], [18.465, -66.117],
-   [32.317, -64.737], [25.775, -80.193]]]"
-   data-tooltip="😈"
-   ></span>
+
+<ul>
+{% for search in searches %}
+    {% if search.location.x != 0 %}
+    <li data-id="{{search.id}}"
+        data-geometry-type="Point"
+        data-geometry="[{{search.location.x}}, {{search.location.y}}]"
+        data-popup="<div>        (NEW)[{{search.location.x}}, {{search.location.y}}]        </div>"
+        >
+    </li>
+    {% else %}
+        <div>0 point?</div>
+    {% endif %}
+    {% endfor %}
+    </ul>

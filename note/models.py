@@ -5,6 +5,12 @@ from django.db import models
 from user.models import NoteUser
 
 
+class Search(models.Model):
+   # id = models.AutoField()
+    location = gis_models.PointField()
+    # author = models.ForeignKey(NoteUser, on_delete=models.CASCADEm )
+
+
 # Create your models here.
 class Place(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
